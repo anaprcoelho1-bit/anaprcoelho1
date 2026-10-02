@@ -1,0 +1,99 @@
+@use '../../../common/tokens' as *;
+
+.footer {
+  @include section-base;
+  padding: 22px 0;
+  border-top: 1px solid $border;
+  background: $band;
+}
+
+.container {
+  @include container;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.org,
+.center {
+  padding-right: 28px;
+}
+
+.center,
+.unit {
+  padding-left: 28px;
+  border-left: 1px solid #b8c4cf;
+}
+
+.logo {
+  display: block;
+  max-width: 220px;
+  max-height: 56px;
+}
+
+.wordmark {
+  display: flex;
+  flex-direction: column;
+}
+
+.wordmarkShort {
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: $navy;
+}
+
+.wordmarkName {
+  max-width: 260px;
+  font-size: 9px;
+  line-height: 1.3;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $text;
+}
+
+.centerTitle,
+.centerText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: $text;
+}
+
+.unit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.unitShort {
+  font-size: 20px;
+  font-weight: 700;
+  color: $navy;
+}
+
+.unitName {
+  max-width: 150px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: $text;
+}
+
+@media (max-width: $bp-phone) {
+  .container {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 16px;
+  }
+
+  .org,
+  .center {
+    padding-right: 0;
+  }
+
+  .center,
+  .unit {
+    padding-left: 0;
+    border-left: none;
+  }
+}

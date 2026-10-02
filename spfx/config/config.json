@@ -1,0 +1,74 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "portfolio-hero-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioHero/PortfolioHeroWebPart.js",
+          "manifest": "./src/webparts/portfolioHero/PortfolioHeroWebPart.manifest.json"
+        }
+      ]
+    },
+    "quick-access-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/quickAccess/QuickAccessWebPart.js",
+          "manifest": "./src/webparts/quickAccess/QuickAccessWebPart.manifest.json"
+        }
+      ]
+    },
+    "portfolio-about-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioAbout/PortfolioAboutWebPart.js",
+          "manifest": "./src/webparts/portfolioAbout/PortfolioAboutWebPart.manifest.json"
+        }
+      ]
+    },
+    "process-steps-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/processSteps/ProcessStepsWebPart.js",
+          "manifest": "./src/webparts/processSteps/ProcessStepsWebPart.manifest.json"
+        }
+      ]
+    },
+    "analysis-criteria-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/analysisCriteria/AnalysisCriteriaWebPart.js",
+          "manifest": "./src/webparts/analysisCriteria/AnalysisCriteriaWebPart.manifest.json"
+        }
+      ]
+    },
+    "portfolio-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioDashboard/PortfolioDashboardWebPart.js",
+          "manifest": "./src/webparts/portfolioDashboard/PortfolioDashboardWebPart.manifest.json"
+        }
+      ]
+    },
+    "support-tools-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/supportTools/SupportToolsWebPart.js",
+          "manifest": "./src/webparts/supportTools/SupportToolsWebPart.manifest.json"
+        }
+      ]
+    },
+    "institutional-footer-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/institutionalFooter/InstitutionalFooterWebPart.js",
+          "manifest": "./src/webparts/institutionalFooter/InstitutionalFooterWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "CIPP Gestão de Portfólio",
+  "isInverted": false,
+  "palette": {
+    "themePrimary": "#0f4c75",
+    "themeLighterAlt": "#f3f6f8",
+    "themeLighter": "#dde6ec",
+    "themeLight": "#c1d0db",
+    "themeTertiary": "#7b9db3",
+    "themeSecondary": "#2c6186",
+    "themeDarkAlt": "#0e4469",
+    "themeDark": "#0b3a59",
+    "themeDarker": "#082b42",
+    "neutralLighterAlt": "#f8fafc",
+    "neutralLighter": "#f2f6fa",
+    "neutralLight": "#e1e8ef",
+    "neutralQuaternaryAlt": "#d2dbe4",
+    "neutralQuaternary": "#c8d2dc",
+    "neutralTertiaryAlt": "#c0cad4",
+    "neutralTertiary": "#a19f9d",
+    "neutralSecondary": "#4a5561",
+    "neutralPrimaryAlt": "#3b3a39",
+    "neutralPrimary": "#323130",
+    "neutralDark": "#201f1e",
+    "black": "#000000",
+    "white": "#ffffff"
+  }
+}

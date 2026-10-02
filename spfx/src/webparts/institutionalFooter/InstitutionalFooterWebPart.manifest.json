@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "d3718a7f-b29f-49d4-8868-2c16c1fc66e9",
+  "alias": "InstitutionalFooterWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart"],
+  "supportsThemeVariants": false,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [{
+    "groupId": "0b5d4a3e-6b2f-4f7c-9a59-cc1f6f3d2a11",
+    "group": { "default": "CIPP – Gestão de Portfólio" },
+    "title": { "default": "Portfólio: Rodapé institucional" },
+    "description": { "default": "Rodapé com logotipo do TCEMG, lema da página e identificação da CIPP." },
+    "officeFabricIconFontName": "Footer",
+    "properties": {}
+  }]
+}

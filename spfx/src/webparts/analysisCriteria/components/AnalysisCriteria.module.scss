@@ -1,0 +1,60 @@
+@use '../../../common/tokens' as *;
+
+.analysisCriteria {
+  @include section-base;
+  padding: 22px 0 26px;
+  background: $band;
+}
+
+.container {
+  @include container;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 14px 16px;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $white;
+  text-align: center;
+}
+
+.icon {
+  margin-bottom: 10px;
+  font-size: 30px;
+  line-height: 1;
+  color: $navy;
+}
+
+.cardTitle {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: $navy;
+}
+
+.cardDescription {
+  max-width: 150px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: $text-muted;
+}
+
+@media (max-width: $bp-phone) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

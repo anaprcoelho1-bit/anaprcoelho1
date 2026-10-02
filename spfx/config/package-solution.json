@@ -1,0 +1,41 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "cipp-portfolio-client-side-solution",
+    "title": "CIPP – Gestão de Portfólio",
+    "id": "07771986-639a-4bcd-b074-9edecd96514a",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "CIPP – Coordenadoria Integrada de Projetos e Processos",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.23.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Web parts da página Gestão de Portfólio (CIPP)"
+      },
+      "longDescription": {
+        "default": "Conjunto de web parts que compõem a página Gestão de Portfólio: banner, acessos principais, processo, critérios de priorização, painel de indicadores, ferramentas de apoio e rodapé institucional."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "cipp-portfolio Feature",
+        "description": "The feature that activates elements of the cipp-portfolio solution.",
+        "id": "f459e79a-4722-4457-9806-d528cbfbce18",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/cipp-portfolio.sppkg"
+  }
+}

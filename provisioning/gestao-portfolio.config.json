@@ -1,0 +1,133 @@
+{
+  "$comment": "Configuração usada por Deploy-GestaoPortfolio.ps1. Tokens: {site} = URL relativa do site (ex.: /sites/cipp); {asset:arquivo} = arquivo da pasta assets/ enviado para SiteAssets/gestao-portfolio (vazio se o arquivo não existir).",
+
+  "site": {
+    "title": "CIPP",
+    "description": "Coordenadoria Integrada de Projetos e Processos"
+  },
+
+  "theme": {
+    "file": "theme/cipp-theme.json"
+  },
+
+  "header": {
+    "layout": "Standard",
+    "emphasis": "None",
+    "logoAlignment": "Left",
+    "megaMenu": true,
+    "logo": "{asset:logo-cipp.png}"
+  },
+
+  "footer": {
+    "$comment": "O rodapé institucional é a web part 'Portfólio: Rodapé institucional'; o rodapé nativo fica desativado para não duplicar.",
+    "enabled": false
+  },
+
+  "navigation": {
+    "location": "TopNavigationBar",
+    "replaceExisting": true,
+    "nodes": [
+      { "title": "Início", "url": "{site}" },
+      { "title": "Sobre a CIPP", "url": "{site}" },
+      { "title": "Projetos", "url": "{site}" },
+      { "title": "Processos", "url": "{site}" },
+      {
+        "title": "Gestão de Portfólio",
+        "url": "{site}/SitePages/Gestao-de-Portfolio.aspx",
+        "children": [
+          { "title": "Visão geral", "url": "{site}/SitePages/Gestao-de-Portfolio.aspx" },
+          { "title": "Solicitar nova iniciativa", "url": "{site}/Lists/Iniciativas/NewForm.aspx" },
+          { "title": "Consultar o Portfólio", "url": "{site}/Lists/Iniciativas/AllItems.aspx" }
+        ]
+      },
+      { "title": "Conhecimento", "url": "{site}" }
+    ]
+  },
+
+  "list": {
+    "title": "Iniciativas",
+    "url": "Lists/Iniciativas",
+    "titleFieldDisplayName": "Iniciativa",
+    "fields": [
+      {
+        "internalName": "Situacao",
+        "displayName": "Situação",
+        "type": "Choice",
+        "required": true,
+        "default": "Em análise",
+        "choices": ["Em análise", "Priorizada", "Planejada", "Em andamento", "Concluída", "Suspensa"]
+      },
+      {
+        "internalName": "ObjetivoEstrategico",
+        "displayName": "Objetivo estratégico",
+        "type": "Choice",
+        "required": true,
+        "choices": [
+          "Gestão e Governança",
+          "Eficiência Operacional",
+          "Transformação Digital",
+          "Serviços ao Cidadão",
+          "Desenvolvimento Institucional"
+        ]
+      },
+      { "internalName": "UnidadeDemandante", "displayName": "Unidade demandante", "type": "Text" },
+      { "internalName": "Descricao", "displayName": "Descrição da necessidade", "type": "Note" }
+    ],
+    "sampleData": {
+      "$comment": "Usado apenas com -SeedSampleData (demonstração). Quantidades iguais às do layout.",
+      "statuses": { "Em análise": 12, "Priorizada": 8, "Planejada": 15, "Em andamento": 27, "Concluída": 6, "Suspensa": 3 }
+    }
+  },
+
+  "page": {
+    "name": "Gestao-de-Portfolio",
+    "title": "Gestão de Portfólio",
+    "setAsHomePage": false,
+    "sections": [
+      {
+        "webPart": "315f2196-762c-4941-bcc3-fde941541b89",
+        "$comment": "Portfólio: Banner principal",
+        "properties": { "imageUrl": "{asset:hero.jpg}" }
+      },
+      {
+        "webPart": "82070982-4073-4732-b9f8-b968f237f694",
+        "$comment": "Portfólio: Acessos principais",
+        "properties": {
+          "items": [
+            { "title": "Solicitar nova iniciativa", "description": "Registre uma nova necessidade, problema ou oportunidade para análise.", "icon": "PageAdd", "accent": "blue", "url": "{site}/Lists/Iniciativas/NewForm.aspx" },
+            { "title": "Consultar o Portfólio", "description": "Acompanhe as iniciativas, prioridades, situação e andamento.", "icon": "BarChartVertical", "accent": "green", "url": "{site}/Lists/Iniciativas/AllItems.aspx" },
+            { "title": "Metodologia de Gestão de Portfólio", "description": "Conheça o processo, critérios, papéis e responsabilidades.", "icon": "ReadingMode", "accent": "orange", "url": "" },
+            { "title": "Indicadores do Portfólio", "description": "Consulte os principais indicadores e a visão consolidada das iniciativas.", "icon": "PieSingle", "accent": "purple", "url": "" }
+          ]
+        }
+      },
+      {
+        "webPart": "c069b4fa-50dd-4e3f-9de0-4459803612ea",
+        "$comment": "Portfólio: O que é",
+        "properties": { "imageUrl": "{asset:sede-tcemg.jpg}" }
+      },
+      {
+        "webPart": "9a982114-57ce-467b-9c88-42753409988c",
+        "$comment": "Portfólio: Como funciona"
+      },
+      {
+        "webPart": "4e1d54c3-f117-4119-b95a-a7396efc2996",
+        "$comment": "Portfólio: Critérios de priorização"
+      },
+      {
+        "webPart": "2debf5dc-ac50-4cea-bc54-b1232b7a39ab",
+        "$comment": "Portfólio: Painel de indicadores",
+        "properties": { "buttonUrl": "{site}/Lists/Iniciativas/AllItems.aspx" }
+      },
+      {
+        "webPart": "88b40a5a-8a35-4fb7-9df1-a3de6fe026bb",
+        "$comment": "Portfólio: Ferramentas e ajuda"
+      },
+      {
+        "webPart": "d3718a7f-b29f-49d4-8868-2c16c1fc66e9",
+        "$comment": "Portfólio: Rodapé institucional",
+        "properties": { "logoUrl": "{asset:logo-tcemg.png}" }
+      }
+    ]
+  }
+}

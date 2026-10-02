@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "4e1d54c3-f117-4119-b95a-a7396efc2996",
+  "alias": "AnalysisCriteriaWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart"],
+  "supportsThemeVariants": false,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [{
+    "groupId": "0b5d4a3e-6b2f-4f7c-9a59-cc1f6f3d2a11",
+    "group": { "default": "CIPP – Gestão de Portfólio" },
+    "title": { "default": "Portfólio: Critérios de priorização" },
+    "description": { "default": "Cards com as dimensões usadas na análise e priorização das iniciativas." },
+    "officeFabricIconFontName": "Filter",
+    "properties": {}
+  }]
+}

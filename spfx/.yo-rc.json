@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.0",
+    "sdksVersions": {},
+    "version": "1.23.2",
+    "libraryName": "cipp-portfolio",
+    "libraryId": "07771986-639a-4bcd-b074-9edecd96514a",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "cipp-portfolio",
+    "solutionShortDescription": "Web parts da página Gestão de Portfólio (CIPP)",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart",
+    "useGulp": false
+  }
+}

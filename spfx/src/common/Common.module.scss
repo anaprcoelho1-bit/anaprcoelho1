@@ -1,0 +1,46 @@
+@use './tokens' as *;
+
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: $navy;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $text-muted;
+}
+
+.button {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: $radius;
+  background: $navy;
+  color: $white;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &:focus {
+    background: $navy-dark;
+    color: $white;
+    text-decoration: none;
+  }
+}
+
+.buttonIcon {
+  font-size: 12px;
+}

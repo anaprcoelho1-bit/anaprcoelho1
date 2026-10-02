@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "88b40a5a-8a35-4fb7-9df1-a3de6fe026bb",
+  "alias": "SupportToolsWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart"],
+  "supportsThemeVariants": false,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [{
+    "groupId": "0b5d4a3e-6b2f-4f7c-9a59-cc1f6f3d2a11",
+    "group": { "default": "CIPP – Gestão de Portfólio" },
+    "title": { "default": "Portfólio: Ferramentas e ajuda" },
+    "description": { "default": "Atalhos para documentos e materiais de apoio, com quadro de contato." },
+    "officeFabricIconFontName": "Toolbox",
+    "properties": {}
+  }]
+}

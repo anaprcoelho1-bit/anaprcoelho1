@@ -1,0 +1,171 @@
+@use '../../../common/tokens' as *;
+
+.hero {
+  @include section-base;
+  position: relative;
+  display: flex;
+  min-height: 300px;
+  overflow: hidden;
+  background: linear-gradient(110deg, #eef6fc 0%, #dcebf6 55%, #b9d3e6 100%);
+}
+
+.media {
+  position: absolute;
+  inset: 0 0 0 30%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+// Clareia o lado esquerdo para o texto ficar legível sobre a foto.
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #eef6fc 0%, rgba(238, 246, 252, 0.95) 32%, rgba(238, 246, 252, 0.55) 52%, rgba(238, 246, 252, 0) 70%);
+}
+
+.inner {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  padding: 36px 32px 36px max(32px, calc((100% - #{$max-width}) / 2 + 32px));
+}
+
+.content {
+  max-width: 560px;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: $navy;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  margin: 10px 0 0;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: $navy;
+}
+
+.description {
+  margin: 14px 0 22px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: $text;
+}
+
+.aside {
+  position: relative;
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 32px 24px;
+  background: linear-gradient(180deg, rgba(11, 59, 92, 0.78) 0%, rgba(8, 44, 69, 0.92) 100%);
+  color: $white;
+}
+
+.words {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    font-size: 15px;
+    line-height: 1.45;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+.rule {
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin: 12px 0 auto;
+  border-radius: 2px;
+  background: #5cc6d8;
+}
+
+.tagline {
+  margin: 24px 0 0;
+  font-size: 10px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+@media (max-width: $bp-tablet) {
+  .title {
+    font-size: 36px;
+  }
+
+  .aside {
+    flex-basis: 180px;
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: $bp-phone) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .media {
+    inset: 0;
+    opacity: 0.35;
+  }
+
+  .fade {
+    background: rgba(238, 246, 252, 0.7);
+  }
+
+  .inner {
+    padding: 28px 16px;
+  }
+
+  .title {
+    font-size: 30px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .aside {
+    flex-basis: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+
+    li {
+      font-size: 12px;
+    }
+  }
+
+  .rule {
+    display: none;
+  }
+
+  .tagline {
+    margin: 0;
+    text-align: left;
+  }
+}
