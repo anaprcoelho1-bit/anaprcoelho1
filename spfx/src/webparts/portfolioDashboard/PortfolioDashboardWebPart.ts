@@ -29,9 +29,9 @@ export default class PortfolioDashboardWebPart extends BaseSectionWebPart<IPortf
       statusField: 'Situacao',
       objectiveField: 'ObjetivoEstrategico',
       statuses: [
-        { value: 'Em análise', label: 'Em análise', color: '#2b88d8' },
-        { value: 'Priorizada', label: 'Priorizadas', color: '#2e9e5b' },
-        { value: 'Planejada', label: 'Planejadas', color: '#e3b505' },
+        { value: 'Registrada;Em análise;Em detalhamento;Elegível', label: 'Em análise', color: '#2b88d8' },
+        { value: 'Priorizada;Selecionada;Em fila;Pendente de aprovação', label: 'Priorizadas', color: '#2e9e5b' },
+        { value: 'Autorizada;Planejada', label: 'Planejadas', color: '#e3b505' },
         { value: 'Em andamento', label: 'Em andamento', color: '#0f5c8c' },
         { value: 'Concluída', label: 'Concluídas', color: '#14a38b' },
         { value: 'Suspensa', label: 'Suspensas', color: '#d64541' }
@@ -78,7 +78,7 @@ export default class PortfolioDashboardWebPart extends BaseSectionWebPart<IPortf
                   key: 'statuses',
                   label: 'Situações exibidas',
                   panelHeader: 'Situações exibidas',
-                  panelDescription: 'O valor deve ser igual à opção da coluna de situação da lista.',
+                  panelDescription: 'O valor deve ser igual à opção da coluna de situação da lista; separe vários valores por ";".',
                   manageBtnLabel: 'Editar situações',
                   saveBtnLabel: 'Salvar',
                   saveAndAddBtnLabel: 'Salvar e adicionar',

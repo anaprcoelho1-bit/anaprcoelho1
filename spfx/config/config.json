@@ -65,6 +65,38 @@
           "manifest": "./src/webparts/institutionalFooter/InstitutionalFooterWebPart.manifest.json"
         }
       ]
+    },
+    "portfolio-prioritization-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioPrioritization/PortfolioPrioritizationWebPart.js",
+          "manifest": "./src/webparts/portfolioPrioritization/PortfolioPrioritizationWebPart.manifest.json"
+        }
+      ]
+    },
+    "portfolio-selection-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioSelection/PortfolioSelectionWebPart.js",
+          "manifest": "./src/webparts/portfolioSelection/PortfolioSelectionWebPart.manifest.json"
+        }
+      ]
+    },
+    "portfolio-monitoring-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioMonitoring/PortfolioMonitoringWebPart.js",
+          "manifest": "./src/webparts/portfolioMonitoring/PortfolioMonitoringWebPart.manifest.json"
+        }
+      ]
+    },
+    "portfolio-report-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/portfolioReport/PortfolioReportWebPart.js",
+          "manifest": "./src/webparts/portfolioReport/PortfolioReportWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},

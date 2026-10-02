@@ -2,7 +2,7 @@ import { IInitiativeRow } from './InitiativeService';
 
 export interface IStatusConfig {
   uniqueId?: string;
-  /** Valor exatamente como aparece na coluna de situação da lista. */
+  /** Valor como aparece na coluna de situação da lista; vários valores podem ser separados por ";". */
   value: string;
   /** Rótulo exibido no indicador (ex.: plural). */
   label: string;
@@ -21,10 +21,13 @@ export interface ICategoryCount {
 const normalize = (text: string): string => text.trim().toLocaleLowerCase('pt-BR');
 
 export function countByStatus(rows: IInitiativeRow[], statuses: IStatusConfig[]): IStatusCount[] {
-  return statuses.map((status) => ({
-    ...status,
-    count: rows.filter((row) => normalize(row.status) === normalize(status.value)).length
-  }));
+  return statuses.map((status) => {
+    const values = (status.value ?? '').split(';').map(normalize).filter((value) => value.length > 0);
+    return {
+      ...status,
+      count: rows.filter((row) => values.indexOf(normalize(row.status)) >= 0).length
+    };
+  });
 }
 
 export function countByObjective(rows: IInitiativeRow[]): ICategoryCount[] {

@@ -1,0 +1,335 @@
+@use '../tokens' as *;
+
+// Estilos compartilhados das web parts operacionais do portfólio.
+
+.section {
+  @include section-base;
+  padding: 24px 0 28px;
+  background: $white;
+}
+
+.container {
+  @include container;
+  max-width: 1440px;
+}
+
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 4px;
+
+  > header {
+    flex: 1 1 320px;
+    min-width: 0;
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta {
+  margin: -12px 0 16px;
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.message {
+  margin: 12px 0;
+}
+
+// Cards de números
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid $border;
+  border-left: 4px solid $heading;
+  border-radius: $radius;
+  background: $white;
+  box-shadow: $shadow;
+}
+
+.cardValue {
+  font-size: 22px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: $navy;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardLabel {
+  font-size: 12px;
+  line-height: 1.35;
+  color: $text;
+}
+
+.cardDetail {
+  font-size: 11px;
+  line-height: 1.4;
+  color: $text-muted;
+}
+
+// Blocos
+.panel {
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $white;
+  box-shadow: $shadow;
+}
+
+.panelTitle {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: $navy;
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.alerts {
+  margin: 0 0 16px;
+  padding: 10px 14px 10px 30px;
+  border-radius: $radius;
+  background: #fff5d6;
+  color: #5c4100;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+// Tabelas
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $white;
+  box-shadow: $shadow;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.4;
+
+  th,
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid $border;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: $band;
+    color: $navy;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover td {
+    background: #f8fafc;
+  }
+}
+
+.num {
+  text-align: right !important;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.center {
+  text-align: center !important;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.itemTitle {
+  font-weight: 600;
+  color: $navy;
+}
+
+.nameCell {
+  min-width: 220px;
+}
+
+.code {
+  display: block;
+  font-size: 11px;
+  color: $text-muted;
+}
+
+.muted {
+  color: $text-muted;
+}
+
+.small {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: $text-muted;
+}
+
+.reasons {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: $text-muted;
+}
+
+.empty {
+  padding: 16px;
+  font-size: 13px;
+  color: $text-muted;
+}
+
+// Etiquetas
+.pill {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.dot {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: baseline;
+}
+
+.check {
+  color: #1e6e4a;
+}
+
+.cross {
+  color: #b3261e;
+}
+
+// Barras 100%
+.stack {
+  display: flex;
+  overflow: hidden;
+  height: 14px;
+  border-radius: 3px;
+  background: #edf1f5;
+}
+
+.stackSegment {
+  height: 100%;
+}
+
+.meter {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: #edf1f5;
+}
+
+.meterFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.meterRange {
+  position: absolute;
+  top: -3px;
+  height: 14px;
+  border: 1px dashed $heading;
+  border-radius: 3px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11.5px;
+  color: $text;
+}
+
+// Formulário de decisão
+.panelSummary {
+  margin: 0 0 16px;
+  padding: 12px;
+  border-radius: $radius;
+  background: $band;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+@media (max-width: $bp-tablet) {
+  .panelGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .toolbar {
+    display: none;
+  }
+
+  .section {
+    padding: 0;
+  }
+
+  .tableWrap,
+  .panel,
+  .card {
+    box-shadow: none;
+  }
+
+  .tableWrap {
+    overflow: visible;
+  }
+}

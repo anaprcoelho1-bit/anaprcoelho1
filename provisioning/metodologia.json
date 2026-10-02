@@ -1,0 +1,145 @@
+{
+  "$comment": "Parâmetros da Metodologia de Gestão de Portfólio. Fonte única dos pesos, faixas e limites usados pelas web parts (motor de regras) e pelo script de implantação (colunas de notas e colunas calculadas VP, CR e IPP). Revisar anualmente, junto ao ciclo de planejamento estratégico (seção 5.6) - nunca no meio de uma priorização. Após alterar, execute Deploy-GestaoPortfolio.ps1 com -SkipApp -SkipTheme -SkipNavigation -SkipPage para atualizar o arquivo publicado e as fórmulas.",
+  "version": "1.0",
+
+  "scale": { "min": 1, "max": 5 },
+
+  "valueCriteria": [
+    { "field": "NotaAlinhamento", "label": "Alinhamento estratégico", "weight": 5, "low": "Vínculo indireto/frágil", "high": "Contribui diretamente para objetivo prioritário" },
+    { "field": "NotaValor", "label": "Valor / benefício esperado", "weight": 5, "low": "Benefício marginal ou incerto", "high": "Benefício alto, mensurável e provável" },
+    { "field": "NotaImpactoUsuarios", "label": "Impacto para usuários / clientes", "weight": 4, "low": "Afeta poucos, de forma leve", "high": "Afeta muitos, resolve dor relevante" },
+    { "field": "NotaIndicadores", "label": "Contribuição para indicadores estratégicos", "weight": 4, "low": "Não move indicadores", "high": "Move indicador crítico de forma relevante" },
+    { "field": "NotaImpactoOrganizacional", "label": "Impacto organizacional", "weight": 3, "low": "Restrito a uma equipe", "high": "Transversal, muda processos-chave" },
+    { "field": "NotaUrgencia", "label": "Urgência / custo do atraso", "weight": 3, "low": "Postergar não gera perda", "high": "Postergar gera perda ou risco significativo" }
+  ],
+
+  "costRiskCriteria": [
+    { "field": "NotaEsforco", "label": "Esforço / consumo de capacidade", "weight": 4, "low": "Pequeno, equipe única", "high": "Muito alto, várias equipes por longo período" },
+    { "field": "NotaCusto", "label": "Custo", "weight": 3, "low": "Baixo ou já orçado", "high": "Alto, exige novo orçamento" },
+    { "field": "NotaRisco", "label": "Risco", "weight": 3, "low": "Riscos baixos e conhecidos", "high": "Riscos altos, incerteza elevada" },
+    { "field": "NotaDependencias", "label": "Dependências", "weight": 2, "low": "Autossuficiente", "high": "Depende de terceiros ou de outras iniciativas críticas" }
+  ],
+
+  "maxValueCriteria": 8,
+  "riskCriterionField": "NotaRisco",
+  "divergenceThreshold": 2,
+
+  "ippBands": [
+    { "min": 1.5, "label": "Alto retorno relativo", "recommendation": "Priorizar fortemente", "color": "#1e6e4a" },
+    { "min": 1.0, "label": "Retorno favorável", "recommendation": "Selecionar conforme capacidade", "color": "#2b88d8" },
+    { "min": 0.7, "label": "Retorno limítrofe", "recommendation": "Reavaliar escopo ou fasear", "color": "#8a6100" },
+    { "min": 0, "label": "Consome mais do que entrega", "recommendation": "Postergar, redesenhar ou descartar", "color": "#b3261e" }
+  ],
+
+  "entry": {
+    "$comment": "Limiar mínimo de porte (seção 3.3): abaixo dele, a iniciativa é tratada como demanda operacional.",
+    "minimumEffortHours": 80
+  },
+
+  "selection": {
+    "minimumIpp": 0.7,
+    "similarIppTolerance": 0.1,
+    "reservePercent": 15,
+    "wipLimitPerTeam": 2
+  },
+
+  "authority": {
+    "$comment": "Alçadas (seção 8.2). Os limites X (horas) e Y (R$) devem ser definidos pela organização e revistos anualmente.",
+    "levels": [
+      { "label": "Pequeno porte", "decider": "Gestor do Portfólio + responsável de negócio", "maxEffortHours": 160, "maxCost": 50000 },
+      { "label": "Médio porte", "decider": "Comitê de Portfólio", "maxEffortHours": 2000, "maxCost": 500000 },
+      { "label": "Grande porte / estratégico", "decider": "Alta gestão, sob recomendação do Comitê" }
+    ],
+    "transversalImpactField": "NotaImpactoOrganizacional",
+    "transversalImpactMin": 4,
+    "newBudgetField": "NotaCusto",
+    "newBudgetMin": 5
+  },
+
+  "monitoring": {
+    "cycleDays": 30,
+    "reviewCycleDays": 90,
+    "yellowDeviationPercent": 10,
+    "redDeviationPercent": 30,
+    "stalledCycles": 2,
+    "highRiskScore": 4,
+    "criticalRiskScore": 5,
+    "costGrowthLimitPercent": 30,
+    "delayedThresholdPercent": 20
+  },
+
+  "indicators": {
+    "alignmentTarget": 100,
+    "topQuartileInExecutionTarget": 80,
+    "capacityCommitment": { "min": 80, "max": 85 },
+    "benefitsRealizedTarget": 70,
+    "delayedMax": 20,
+    "earlyTermination": { "min": 5, "max": 15 },
+    "riskMax": 3.0,
+    "concentrationSharePercent": 50,
+    "lowRiskLevel": 2.0,
+    "innovationMinSharePercent": 15
+  },
+
+  "objectives": [
+    { "name": "Gestão e Governança", "priority": true, "active": true },
+    { "name": "Eficiência Operacional", "priority": true, "active": true },
+    { "name": "Transformação Digital", "priority": true, "active": true },
+    { "name": "Serviços ao Cidadão", "priority": true, "active": true },
+    { "name": "Desenvolvimento Institucional", "priority": false, "active": true }
+  ],
+
+  "teams": ["CIPP – Projetos", "CIPP – Processos", "Tecnologia da Informação", "Áreas de negócio"],
+
+  "categories": {
+    "nature": ["Projeto", "Produto", "Programa", "Iniciativa estratégica", "Melhoria"],
+    "motivation": ["Obrigatória (legal/regulatória)", "Estratégica", "Sustentação/continuidade", "Eficiência", "Inovação"],
+    "horizon": ["Curto (até 6 meses)", "Médio (6 a 18 meses)", "Longo (acima de 18 meses)"],
+    "size": ["Pequeno", "Médio", "Grande"]
+  },
+
+  "balance": [
+    {
+      "key": "horizon",
+      "label": "Horizonte",
+      "field": "Horizonte",
+      "risk": "Só curto prazo: erosão da competitividade. Só longo: ausência de resultados visíveis",
+      "bands": [
+        { "label": "Curto", "values": ["Curto (até 6 meses)"], "target": 50, "min": 40, "max": 60 },
+        { "label": "Médio", "values": ["Médio (6 a 18 meses)"], "target": 35, "min": 25, "max": 45 },
+        { "label": "Longo", "values": ["Longo (acima de 18 meses)"], "target": 15, "min": 5, "max": 25 }
+      ]
+    },
+    {
+      "key": "innovation",
+      "label": "Inovação × sustentação",
+      "field": "Motivacao",
+      "risk": "Pouca sustentação: acúmulo de dívida técnica e falhas operacionais",
+      "bands": [
+        { "label": "Inovação/novo", "values": ["Inovação"], "target": 30, "min": 20, "max": 40 },
+        { "label": "Evolução", "values": ["Estratégica", "Eficiência"], "target": 40, "min": 30, "max": 50 },
+        { "label": "Sustentação", "values": ["Sustentação/continuidade"], "target": 30, "min": 20, "max": 40 }
+      ]
+    },
+    {
+      "key": "mandatory",
+      "label": "Obrigatório × estratégico",
+      "field": "Motivacao",
+      "risk": "Obrigatório dominante: portfólio reativo, estratégia não avança",
+      "bands": [
+        { "label": "Obrigatório", "values": ["Obrigatória (legal/regulatória)"], "max": 30 },
+        { "label": "Estratégico", "values": ["Estratégica", "Inovação", "Eficiência"], "min": 50 }
+      ]
+    },
+    {
+      "key": "risk",
+      "label": "Risco",
+      "field": "NotaRisco",
+      "risk": "Sem risco algum: nenhuma inovação. Muito risco: fragilidade da carteira",
+      "bands": [
+        { "label": "Baixo/médio", "scoreMin": 1, "scoreMax": 3, "min": 70, "max": 80 },
+        { "label": "Alto", "scoreMin": 4, "scoreMax": 5, "min": 20, "max": 30 }
+      ]
+    }
+  ]
+}

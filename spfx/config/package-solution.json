@@ -4,7 +4,7 @@
     "name": "cipp-portfolio-client-side-solution",
     "title": "CIPP – Gestão de Portfólio",
     "id": "07771986-639a-4bcd-b074-9edecd96514a",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -20,7 +20,7 @@
         "default": "Web parts da página Gestão de Portfólio (CIPP)"
       },
       "longDescription": {
-        "default": "Conjunto de web parts que compõem a página Gestão de Portfólio: banner, acessos principais, processo, critérios de priorização, painel de indicadores, ferramentas de apoio e rodapé institucional."
+        "default": "Conjunto de web parts que compõem a página Gestão de Portfólio (banner, acessos principais, processo, critérios de priorização, painel de indicadores, ferramentas de apoio e rodapé institucional) e automatizam a Metodologia de Gestão de Portfólio: priorização (VP, CR e IPP), seleção e balanceamento pela capacidade, monitoramento com os 8 indicadores, registro de decisões e relatório executivo."
       },
       "screenshotPaths": [],
       "videoUrl": "",

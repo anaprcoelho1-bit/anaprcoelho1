@@ -1,133 +1,542 @@
 {
-  "$comment": "Configuração usada por Deploy-GestaoPortfolio.ps1. Tokens: {site} = URL relativa do site (ex.: /sites/cipp); {asset:arquivo} = arquivo da pasta assets/ enviado para SiteAssets/gestao-portfolio (vazio se o arquivo não existir).",
-
-  "site": {
-    "title": "CIPP",
-    "description": "Coordenadoria Integrada de Projetos e Processos"
+  "$comment": "Configuração usada por Deploy-GestaoPortfolio.ps1. Tokens: {site} = URL relativa do site (ex.: /sites/cipp); {asset:arquivo} = arquivo da pasta assets/ enviado para SiteAssets/gestao-portfolio (vazio se o arquivo não existir). Pesos, faixas, objetivos estratégicos e equipes ficam em metodologia.json.",
+  "site": {"title": "CIPP", "description": "Coordenadoria Integrada de Projetos e Processos"},
+  "theme": {"file": "theme/cipp-theme.json"},
+  "methodology": {
+    "$comment": "Parâmetros da metodologia: publicados no site (lidos pelas web parts) e usados para gerar as colunas de notas e as fórmulas de VP, CR e IPP.",
+    "file": "metodologia.json",
+    "publishFolder": "SiteAssets/gestao-portfolio"
   },
-
-  "theme": {
-    "file": "theme/cipp-theme.json"
+  "lifecycle": {
+    "$comment": "Situações e decisões do fluxo (iguais às do motor de regras em spfx/src/methodology; verificado nos testes).",
+    "statuses": [
+      "Registrada",
+      "Em análise",
+      "Em detalhamento",
+      "Não elegível",
+      "Elegível",
+      "Priorizada",
+      "Selecionada",
+      "Em fila",
+      "Descartada",
+      "Pendente de aprovação",
+      "Autorizada",
+      "Em andamento",
+      "Suspensa",
+      "Concluída",
+      "Cancelada",
+      "Absorvida"
+    ],
+    "decisions": [
+      "Iniciar análise",
+      "Elegível",
+      "Devolver para detalhamento",
+      "Recusar",
+      "Selecionar",
+      "Manter em fila",
+      "Descartar",
+      "Aprovar integralmente",
+      "Aprovar por fase/incremento",
+      "Aprovar condicionalmente",
+      "Postergar",
+      "Manter",
+      "Repriorizar",
+      "Acelerar",
+      "Suspender",
+      "Replanejar",
+      "Retomar",
+      "Substituir",
+      "Encerrar",
+      "Concluir",
+      "Cancelar",
+      "Absorver"
+    ]
   },
-
-  "header": {
-    "layout": "Standard",
-    "emphasis": "None",
-    "logoAlignment": "Left",
-    "megaMenu": true,
-    "logo": "{asset:logo-cipp.png}"
-  },
-
-  "footer": {
-    "$comment": "O rodapé institucional é a web part 'Portfólio: Rodapé institucional'; o rodapé nativo fica desativado para não duplicar.",
-    "enabled": false
-  },
-
+  "header": {"layout": "Standard", "emphasis": "None", "logoAlignment": "Left", "megaMenu": true, "logo": "{asset:logo-cipp.png}"},
+  "footer": {"$comment": "O rodapé institucional é a web part 'Portfólio: Rodapé institucional'; o rodapé nativo fica desativado para não duplicar.", "enabled": false},
   "navigation": {
     "location": "TopNavigationBar",
     "replaceExisting": true,
     "nodes": [
-      { "title": "Início", "url": "{site}" },
-      { "title": "Sobre a CIPP", "url": "{site}" },
-      { "title": "Projetos", "url": "{site}" },
-      { "title": "Processos", "url": "{site}" },
+      {"title": "Início", "url": "{site}"},
+      {"title": "Sobre a CIPP", "url": "{site}"},
+      {"title": "Projetos", "url": "{site}"},
+      {"title": "Processos", "url": "{site}"},
       {
         "title": "Gestão de Portfólio",
         "url": "{site}/SitePages/Gestao-de-Portfolio.aspx",
         "children": [
-          { "title": "Visão geral", "url": "{site}/SitePages/Gestao-de-Portfolio.aspx" },
-          { "title": "Solicitar nova iniciativa", "url": "{site}/Lists/Iniciativas/NewForm.aspx" },
-          { "title": "Consultar o Portfólio", "url": "{site}/Lists/Iniciativas/AllItems.aspx" }
+          {"title": "Visão geral", "url": "{site}/SitePages/Gestao-de-Portfolio.aspx"},
+          {"title": "Solicitar nova iniciativa", "url": "{site}/Lists/Iniciativas/NewForm.aspx"},
+          {"title": "Inventário do Portfólio", "url": "{site}/Lists/Iniciativas/AllItems.aspx"},
+          {"title": "Priorização", "url": "{site}/SitePages/Priorizacao-do-Portfolio.aspx"},
+          {"title": "Seleção e balanceamento", "url": "{site}/SitePages/Selecao-e-Balanceamento.aspx"},
+          {"title": "Monitoramento e indicadores", "url": "{site}/SitePages/Monitoramento-do-Portfolio.aspx"},
+          {"title": "Relatório executivo", "url": "{site}/SitePages/Relatorio-Executivo-do-Portfolio.aspx"},
+          {"title": "Registro de Decisões", "url": "{site}/Lists/RegistroDecisoes/AllItems.aspx"},
+          {"title": "Mapa de Capacidade", "url": "{site}/Lists/MapaCapacidade/AllItems.aspx"}
         ]
       },
-      { "title": "Conhecimento", "url": "{site}" }
+      {"title": "Conhecimento", "url": "{site}"}
     ]
   },
-
-  "list": {
-    "title": "Iniciativas",
-    "url": "Lists/Iniciativas",
-    "titleFieldDisplayName": "Iniciativa",
-    "fields": [
-      {
-        "internalName": "Situacao",
-        "displayName": "Situação",
-        "type": "Choice",
-        "required": true,
-        "default": "Em análise",
-        "choices": ["Em análise", "Priorizada", "Planejada", "Em andamento", "Concluída", "Suspensa"]
-      },
-      {
-        "internalName": "ObjetivoEstrategico",
-        "displayName": "Objetivo estratégico",
-        "type": "Choice",
-        "required": true,
-        "choices": [
-          "Gestão e Governança",
-          "Eficiência Operacional",
-          "Transformação Digital",
-          "Serviços ao Cidadão",
-          "Desenvolvimento Institucional"
-        ]
-      },
-      { "internalName": "UnidadeDemandante", "displayName": "Unidade demandante", "type": "Text" },
-      { "internalName": "Descricao", "displayName": "Descrição da necessidade", "type": "Note" }
-    ],
-    "sampleData": {
-      "$comment": "Usado apenas com -SeedSampleData (demonstração). Quantidades iguais às do layout.",
-      "statuses": { "Em análise": 12, "Priorizada": 8, "Planejada": 15, "Em andamento": 27, "Concluída": 6, "Suspensa": 3 }
-    }
-  },
-
-  "page": {
-    "name": "Gestao-de-Portfolio",
-    "title": "Gestão de Portfólio",
-    "setAsHomePage": false,
-    "sections": [
-      {
-        "webPart": "315f2196-762c-4941-bcc3-fde941541b89",
-        "$comment": "Portfólio: Banner principal",
-        "properties": { "imageUrl": "{asset:hero.jpg}" }
-      },
-      {
-        "webPart": "82070982-4073-4732-b9f8-b968f237f694",
-        "$comment": "Portfólio: Acessos principais",
-        "properties": {
-          "items": [
-            { "title": "Solicitar nova iniciativa", "description": "Registre uma nova necessidade, problema ou oportunidade para análise.", "icon": "PageAdd", "accent": "blue", "url": "{site}/Lists/Iniciativas/NewForm.aspx" },
-            { "title": "Consultar o Portfólio", "description": "Acompanhe as iniciativas, prioridades, situação e andamento.", "icon": "BarChartVertical", "accent": "green", "url": "{site}/Lists/Iniciativas/AllItems.aspx" },
-            { "title": "Metodologia de Gestão de Portfólio", "description": "Conheça o processo, critérios, papéis e responsabilidades.", "icon": "ReadingMode", "accent": "orange", "url": "" },
-            { "title": "Indicadores do Portfólio", "description": "Consulte os principais indicadores e a visão consolidada das iniciativas.", "icon": "PieSingle", "accent": "purple", "url": "" }
+  "lists": [
+    {
+      "$comment": "Inventário do Portfólio e Ficha Resumida da Iniciativa (uma linha por iniciativa). As colunas de notas (critérios) e as colunas calculadas VP, CR e IPP são geradas a partir de metodologia.json.",
+      "key": "initiatives",
+      "title": "Iniciativas",
+      "url": "Lists/Iniciativas",
+      "description": "Inventário do Portfólio: uma linha por iniciativa, da entrada ao encerramento.",
+      "titleFieldDisplayName": "Iniciativa",
+      "scoreFields": true,
+      "indexFields": true,
+      "fields": [
+        {
+          "internalName": "Codigo",
+          "displayName": "Código",
+          "type": "Text",
+          "modelField": true,
+          "description": "Gerado automaticamente (INI-AAAA-NNN) ao atualizar a lista pelo painel."
+        },
+        {
+          "internalName": "Situacao",
+          "displayName": "Situação",
+          "type": "Choice",
+          "required": true,
+          "default": "Registrada",
+          "choicesFrom": "lifecycle.statuses",
+          "description": "Atualizada pelos registros de decisão.",
+          "indexed": true
+        },
+        {
+          "internalName": "ResponsavelNegocio",
+          "displayName": "Responsável de negócio",
+          "type": "User",
+          "description": "Dono do benefício: propõe, defende e responde pela realização do benefício."
+        },
+        {"internalName": "UnidadeDemandante", "displayName": "Unidade demandante", "type": "Text"},
+        {"internalName": "Descricao", "displayName": "Problema / oportunidade", "type": "Note", "description": "3 a 5 linhas."},
+        {"internalName": "SolucaoProposta", "displayName": "Solução proposta", "type": "Note", "description": "3 a 5 linhas."},
+        {
+          "internalName": "ObjetivoEstrategico",
+          "displayName": "Objetivo estratégico",
+          "type": "Choice",
+          "choicesFrom": "objectives",
+          "description": "Sem vínculo declarado, a iniciativa não entra no portfólio (exceto obrigações legais).",
+          "indexed": true
+        },
+        {"internalName": "BeneficioEsperado", "displayName": "Benefício esperado", "type": "Note", "description": "Ainda que qualitativo."},
+        {"internalName": "IndicadorBeneficio", "displayName": "Indicador do benefício", "type": "Text", "description": "Como o benefício será medido."},
+        {"internalName": "LinhaBase", "displayName": "Linha de base do benefício", "type": "Text"},
+        {"internalName": "MetaBeneficio", "displayName": "Meta do benefício", "type": "Text"},
+        {"internalName": "PrazoMedicaoBeneficio", "displayName": "Prazo de medição do benefício", "type": "DateTime"},
+        {"internalName": "Natureza", "displayName": "Natureza", "type": "Choice", "choicesFrom": "categories.nature"},
+        {"internalName": "Motivacao", "displayName": "Motivação", "type": "Choice", "choicesFrom": "categories.motivation"},
+        {"internalName": "Horizonte", "displayName": "Horizonte", "type": "Choice", "choicesFrom": "categories.horizon"},
+        {"internalName": "Porte", "displayName": "Porte", "type": "Choice", "choicesFrom": "categories.size"},
+        {
+          "internalName": "Equipe",
+          "displayName": "Equipe executora",
+          "type": "Choice",
+          "choicesFrom": "teams",
+          "description": "Usada no Mapa de Capacidade e no limite de iniciativas simultâneas (WIP)."
+        },
+        {
+          "internalName": "EsforcoEstimado",
+          "displayName": "Esforço total estimado (h)",
+          "type": "Number",
+          "min": 0,
+          "decimals": 0,
+          "description": "Ordem de grandeza. Abaixo do limiar mínimo de porte, tratar como demanda operacional."
+        },
+        {
+          "internalName": "EsforcoCiclo",
+          "displayName": "Demanda de capacidade no ciclo (h)",
+          "type": "Number",
+          "min": 0,
+          "decimals": 0,
+          "description": "Horas no trimestre atual. Vazio: usa o esforço total."
+        },
+        {"internalName": "CustoEstimado", "displayName": "Custo estimado (R$)", "type": "Currency", "min": 0},
+        {"internalName": "DuracaoMeses", "displayName": "Duração estimada (meses)", "type": "Number", "min": 0, "decimals": 1},
+        {
+          "internalName": "Viabilidade",
+          "displayName": "Viabilidade",
+          "type": "Choice",
+          "default": "Não avaliada",
+          "choices": ["Não avaliada", "Viável", "Inviável"],
+          "description": "Ponto de controle: inviável (legal, técnica ou operacionalmente) não entra."
+        },
+        {
+          "internalName": "ObrigacaoLegal",
+          "displayName": "Obrigação legal/regulatória",
+          "type": "Boolean",
+          "default": "0",
+          "description": "Ponto de controle: entra com capacidade reservada, mas também é pontuada."
+        },
+        {"internalName": "PrazoLegal", "displayName": "Prazo legal", "type": "DateTime"},
+        {"internalName": "PrincipaisRiscos", "displayName": "Principais riscos (até 3)", "type": "Note"},
+        {"internalName": "RespostaRiscoDefinida", "displayName": "Resposta aos riscos definida", "type": "Boolean", "default": "0"},
+        {"internalName": "Dependencias", "displayName": "Dependências (iniciativas)", "type": "LookupMulti", "lookupList": "Lists/Iniciativas", "showField": "Title"},
+        {"internalName": "OutrasDependencias", "displayName": "Outras dependências (áreas, fornecedores)", "type": "Note"},
+        {"internalName": "DependenciaBloqueada", "displayName": "Dependência crítica bloqueada", "type": "Boolean", "default": "0"},
+        {"internalName": "GestorIniciativa", "displayName": "Gestor da iniciativa", "type": "User"},
+        {
+          "internalName": "CapacidadeAlocada",
+          "displayName": "Capacidade efetivamente alocada",
+          "type": "Boolean",
+          "default": "0",
+          "description": "Pessoas nomeadas e capacidade reservada."
+        },
+        {"internalName": "DataAutorizacao", "displayName": "Data de autorização", "type": "DateTime"},
+        {"internalName": "InicioPrevisto", "displayName": "Início previsto", "type": "DateTime"},
+        {"internalName": "TerminoPrevisto", "displayName": "Término previsto (linha de base)", "type": "DateTime"},
+        {"internalName": "TerminoProjetado", "displayName": "Término projetado", "type": "DateTime"},
+        {"internalName": "CustoAprovado", "displayName": "Custo aprovado (linha de base, R$)", "type": "Currency", "min": 0},
+        {"internalName": "CustoProjetado", "displayName": "Custo projetado (R$)", "type": "Currency", "min": 0},
+        {"internalName": "PercentualConcluido", "displayName": "Progresso (%)", "type": "Number", "min": 0, "max": 100, "decimals": 0},
+        {"internalName": "DataUltimaEntrega", "displayName": "Data da última entrega/marco", "type": "DateTime"},
+        {
+          "internalName": "BeneficioComprometido",
+          "displayName": "Benefício comprometido",
+          "type": "Boolean",
+          "default": "0",
+          "description": "Premissas de valor não se confirmaram."
+        },
+        {
+          "internalName": "BeneficioRealizado",
+          "displayName": "Benefício realizado (%)",
+          "type": "Number",
+          "min": 0,
+          "decimals": 0,
+          "description": "Benefício medido em relação ao previsto (continua sendo medido após o encerramento)."
+        },
+        {"internalName": "UltimaDecisao", "displayName": "Última decisão", "type": "Text", "modelField": true},
+        {"internalName": "JustificativaDecisao", "displayName": "Justificativa da última decisão", "type": "Note", "modelField": true},
+        {"internalName": "DataUltimaDecisao", "displayName": "Data da última decisão", "type": "DateTime", "modelField": true},
+        {"internalName": "PosicaoRanking", "displayName": "Posição no ranking", "type": "Number", "decimals": 0, "modelField": true},
+        {"internalName": "LeituraIPP", "displayName": "Leitura do IPP", "type": "Text", "modelField": true},
+        {"internalName": "Semaforo", "displayName": "Semáforo", "type": "Choice", "choices": ["Verde", "Amarelo", "Vermelho"], "modelField": true, "format": "semaforo"},
+        {"internalName": "AlertasModelo", "displayName": "Alertas do modelo", "type": "Note", "modelField": true},
+        {"internalName": "SugestaoModelo", "displayName": "Sugestão do modelo", "type": "Text", "modelField": true},
+        {"internalName": "Alcada", "displayName": "Alçada de decisão", "type": "Text", "modelField": true},
+        {"internalName": "AtualizadoModelo", "displayName": "Atualizado pelo modelo em", "type": "DateTime", "dateTime": true, "modelField": true}
+      ],
+      "formSections": [
+        {"title": "Identificação", "fields": ["Title", "Codigo", "Situacao", "ResponsavelNegocio", "UnidadeDemandante"]},
+        {
+          "title": "Problema, solução e benefício",
+          "fields": [
+            "Descricao",
+            "SolucaoProposta",
+            "ObjetivoEstrategico",
+            "BeneficioEsperado",
+            "IndicadorBeneficio",
+            "LinhaBase",
+            "MetaBeneficio",
+            "PrazoMedicaoBeneficio"
+          ]
+        },
+        {"title": "Categorização", "fields": ["Natureza", "Motivacao", "Horizonte", "Porte", "Equipe"]},
+        {
+          "title": "Estimativas e pontos de controle",
+          "fields": ["EsforcoEstimado", "EsforcoCiclo", "CustoEstimado", "DuracaoMeses", "Viabilidade", "ObrigacaoLegal", "PrazoLegal"]
+        },
+        {"title": "Riscos e dependências", "fields": ["PrincipaisRiscos", "RespostaRiscoDefinida", "Dependencias", "OutrasDependencias", "DependenciaBloqueada"]},
+        {"title": "Avaliação (notas de 1 a 5)", "fields": ["$scores", "$indexes"]},
+        {
+          "title": "Autorização e acompanhamento",
+          "fields": [
+            "GestorIniciativa",
+            "CapacidadeAlocada",
+            "DataAutorizacao",
+            "InicioPrevisto",
+            "TerminoPrevisto",
+            "TerminoProjetado",
+            "CustoAprovado",
+            "CustoProjetado",
+            "PercentualConcluido",
+            "DataUltimaEntrega",
+            "BeneficioComprometido",
+            "BeneficioRealizado"
+          ]
+        },
+        {
+          "title": "Decisões e modelo",
+          "fields": [
+            "UltimaDecisao",
+            "JustificativaDecisao",
+            "DataUltimaDecisao",
+            "PosicaoRanking",
+            "LeituraIPP",
+            "Semaforo",
+            "AlertasModelo",
+            "SugestaoModelo",
+            "Alcada",
+            "AtualizadoModelo"
           ]
         }
-      },
-      {
-        "webPart": "c069b4fa-50dd-4e3f-9de0-4459803612ea",
-        "$comment": "Portfólio: O que é",
-        "properties": { "imageUrl": "{asset:sede-tcemg.jpg}" }
-      },
-      {
-        "webPart": "9a982114-57ce-467b-9c88-42753409988c",
-        "$comment": "Portfólio: Como funciona"
-      },
-      {
-        "webPart": "4e1d54c3-f117-4119-b95a-a7396efc2996",
-        "$comment": "Portfólio: Critérios de priorização"
-      },
-      {
-        "webPart": "2debf5dc-ac50-4cea-bc54-b1232b7a39ab",
-        "$comment": "Portfólio: Painel de indicadores",
-        "properties": { "buttonUrl": "{site}/Lists/Iniciativas/AllItems.aspx" }
-      },
-      {
-        "webPart": "88b40a5a-8a35-4fb7-9df1-a3de6fe026bb",
-        "$comment": "Portfólio: Ferramentas e ajuda"
-      },
-      {
-        "webPart": "d3718a7f-b29f-49d4-8868-2c16c1fc66e9",
-        "$comment": "Portfólio: Rodapé institucional",
-        "properties": { "logoUrl": "{asset:logo-tcemg.png}" }
-      }
-    ]
-  }
+      ],
+      "views": [
+        {
+          "title": "Fila de entrada",
+          "fields": ["Codigo", "LinkTitle", "Situacao", "ResponsavelNegocio", "UnidadeDemandante", "ObjetivoEstrategico", "Viabilidade", "SugestaoModelo", "Created"],
+          "statuses": ["Registrada", "Em análise", "Em detalhamento"],
+          "orderBy": "Created",
+          "ascending": true
+        },
+        {
+          "title": "Matriz de priorização",
+          "fields": ["PosicaoRanking", "Codigo", "LinkTitle", "ObjetivoEstrategico", "Motivacao", "$scores", "$indexes", "LeituraIPP", "Situacao", "SugestaoModelo"],
+          "statuses": ["Elegível", "Priorizada", "Selecionada", "Em fila", "Pendente de aprovação", "Autorizada", "Em andamento"],
+          "orderBy": "IPP",
+          "ascending": false
+        },
+        {
+          "title": "Portfólio ativo",
+          "fields": [
+            "Semaforo",
+            "Codigo",
+            "LinkTitle",
+            "Situacao",
+            "Equipe",
+            "GestorIniciativa",
+            "PercentualConcluido",
+            "TerminoPrevisto",
+            "TerminoProjetado",
+            "CustoAprovado",
+            "CustoProjetado",
+            "AlertasModelo",
+            "SugestaoModelo"
+          ],
+          "statuses": ["Autorizada", "Em andamento", "Planejada"],
+          "orderBy": "PosicaoRanking",
+          "ascending": true
+        },
+        {
+          "title": "Encerradas e retiradas",
+          "fields": ["Codigo", "LinkTitle", "Situacao", "UltimaDecisao", "JustificativaDecisao", "DataUltimaDecisao", "BeneficioRealizado"],
+          "statuses": ["Concluída", "Suspensa", "Cancelada", "Absorvida", "Descartada", "Não elegível"],
+          "orderBy": "DataUltimaDecisao",
+          "ascending": false
+        }
+      ],
+      "defaultViewFields": ["Codigo", "LinkTitle", "Situacao", "ObjetivoEstrategico", "Motivacao", "IPP", "Semaforo", "SugestaoModelo"]
+    },
+    {
+      "key": "decisions",
+      "title": "Registro de Decisões",
+      "url": "Lists/RegistroDecisoes",
+      "description": "Memória decisória do portfólio: data, decisão, justificativa e responsável.",
+      "titleFieldDisplayName": "Resumo",
+      "fields": [
+        {"internalName": "Iniciativa", "displayName": "Iniciativa", "type": "Lookup", "lookupList": "Lists/Iniciativas", "showField": "Title", "required": true},
+        {
+          "internalName": "PontoDecisao",
+          "displayName": "Ponto de decisão",
+          "type": "Choice",
+          "required": true,
+          "choices": ["◆ 1 – Elegibilidade", "◆ 2 – Composição do portfólio", "◆ 3 – Autorização", "◆ 4 – Revisão do portfólio", "Encerramento ou retirada"]
+        },
+        {"internalName": "Decisao", "displayName": "Decisão", "type": "Choice", "required": true, "choicesFrom": "lifecycle.decisions"},
+        {"internalName": "Justificativa", "displayName": "Justificativa", "type": "Note"},
+        {
+          "internalName": "Instancia",
+          "displayName": "Instância",
+          "type": "Choice",
+          "required": true,
+          "choices": ["Gestor do Portfólio + responsável de negócio", "Comitê de Portfólio", "Alta gestão"]
+        },
+        {"internalName": "DataDecisao", "displayName": "Data da decisão", "type": "DateTime", "required": true, "defaultToday": true},
+        {"internalName": "SituacaoAnterior", "displayName": "Situação anterior", "type": "Text"},
+        {"internalName": "SituacaoNova", "displayName": "Nova situação", "type": "Text"}
+      ],
+      "defaultViewFields": ["DataDecisao", "LinkTitle", "Iniciativa", "PontoDecisao", "Decisao", "Instancia", "Justificativa", "Author"],
+      "defaultViewOrderBy": "DataDecisao",
+      "defaultViewAscending": false
+    },
+    {
+      "key": "capacity",
+      "title": "Mapa de Capacidade",
+      "url": "Lists/MapaCapacidade",
+      "description": "Capacidade real das equipes por ciclo (trimestre), em horas.",
+      "titleFieldDisplayName": "Ciclo",
+      "titleFieldDescription": "Formato AAAA-Tn (ex.: 2026-T4).",
+      "fields": [
+        {"internalName": "Equipe", "displayName": "Equipe", "type": "Choice", "required": true, "choicesFrom": "teams"},
+        {"internalName": "CapacidadeTotal", "displayName": "Capacidade total (h)", "type": "Number", "required": true, "min": 0, "decimals": 0},
+        {
+          "internalName": "Sustentacao",
+          "displayName": "Sustentação/operação (h)",
+          "type": "Number",
+          "min": 0,
+          "decimals": 0,
+          "description": "Horas consumidas pela operação contínua."
+        },
+        {
+          "internalName": "ReservaPercentual",
+          "displayName": "Reserva para imprevistos (%)",
+          "type": "Number",
+          "min": 0,
+          "max": 100,
+          "decimals": 0,
+          "description": "Vazio: usa a reserva padrão de metodologia.json (15% a 20% recomendados)."
+        },
+        {
+          "internalName": "LimiteWIP",
+          "displayName": "Limite de iniciativas simultâneas (WIP)",
+          "type": "Number",
+          "min": 0,
+          "decimals": 0,
+          "description": "Vazio: usa o padrão de metodologia.json (1 a 2 por equipe)."
+        }
+      ],
+      "defaultViewFields": ["LinkTitle", "Equipe", "CapacidadeTotal", "Sustentacao", "ReservaPercentual", "LimiteWIP"],
+      "defaultViewOrderBy": "Title",
+      "defaultViewAscending": false
+    },
+    {
+      "$comment": "Opcional: cada membro do comitê registra suas notas; o painel aponta divergências acima do limite e permite aplicar a mediana na iniciativa.",
+      "key": "scores",
+      "title": "Pontuações do Comitê",
+      "url": "Lists/PontuacoesComite",
+      "description": "Notas individuais dos membros do Comitê de Portfólio (o avaliador é quem cria o item).",
+      "titleFieldDisplayName": "Observações",
+      "titleFieldRequired": false,
+      "scoreFields": true,
+      "fields": [{"internalName": "Iniciativa", "displayName": "Iniciativa", "type": "Lookup", "lookupList": "Lists/Iniciativas", "showField": "Title", "required": true}],
+      "defaultViewFields": ["Iniciativa", "Author", "$scores", "LinkTitle"]
+    }
+  ],
+  "formats": {
+    "semaforo": {
+      "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+      "elmType": "div",
+      "style": {"display": "flex", "align-items": "center"},
+      "children": [
+        {
+          "elmType": "span",
+          "style": {
+            "width": "12px",
+            "height": "12px",
+            "border-radius": "50%",
+            "margin-right": "6px",
+            "display": "=if(@currentField == '', 'none', 'inline-block')",
+            "background-color": "=if(@currentField == 'Vermelho', '#d64541', if(@currentField == 'Amarelo', '#e3b505', '#2e9e5b'))"
+          }
+        },
+        {"elmType": "span", "txtContent": "@currentField"}
+      ]
+    }
+  },
+  "sampleData": {
+    "$comment": "Usado apenas com -SeedSampleData (demonstração). Quantidades por situação e capacidade por equipe no ciclo atual.",
+    "statuses": {
+      "Registrada": 4,
+      "Em análise": 5,
+      "Em detalhamento": 1,
+      "Elegível": 2,
+      "Priorizada": 4,
+      "Selecionada": 2,
+      "Em fila": 2,
+      "Autorizada": 15,
+      "Em andamento": 27,
+      "Concluída": 6,
+      "Suspensa": 3
+    },
+    "capacityPerTeam": {"total": 2600, "sustainment": 700, "wipLimit": 12}
+  },
+  "pages": [
+    {
+      "name": "Gestao-de-Portfolio",
+      "title": "Gestão de Portfólio",
+      "setAsHomePage": false,
+      "sections": [
+        {"webPart": "315f2196-762c-4941-bcc3-fde941541b89", "$comment": "Portfólio: Banner principal", "properties": {"imageUrl": "{asset:hero.jpg}"}},
+        {
+          "webPart": "82070982-4073-4732-b9f8-b968f237f694",
+          "$comment": "Portfólio: Acessos principais",
+          "properties": {
+            "items": [
+              {
+                "title": "Solicitar nova iniciativa",
+                "description": "Registre uma nova necessidade, problema ou oportunidade para análise.",
+                "icon": "PageAdd",
+                "accent": "blue",
+                "url": "{site}/Lists/Iniciativas/NewForm.aspx"
+              },
+              {
+                "title": "Consultar o Portfólio",
+                "description": "Acompanhe as iniciativas, prioridades, situação e andamento.",
+                "icon": "BarChartVertical",
+                "accent": "green",
+                "url": "{site}/SitePages/Priorizacao-do-Portfolio.aspx"
+              },
+              {
+                "title": "Metodologia de Gestão de Portfólio",
+                "description": "Conheça o processo, critérios, papéis e responsabilidades.",
+                "icon": "ReadingMode",
+                "accent": "orange",
+                "url": "{asset:Metodologia-Gestao-de-Portfolio.docx}"
+              },
+              {
+                "title": "Indicadores do Portfólio",
+                "description": "Consulte os principais indicadores e a visão consolidada das iniciativas.",
+                "icon": "PieSingle",
+                "accent": "purple",
+                "url": "{site}/SitePages/Monitoramento-do-Portfolio.aspx"
+              }
+            ]
+          }
+        },
+        {
+          "webPart": "c069b4fa-50dd-4e3f-9de0-4459803612ea",
+          "$comment": "Portfólio: O que é",
+          "properties": {"imageUrl": "{asset:sede-tcemg.jpg}", "buttonUrl": "{asset:Metodologia-Gestao-de-Portfolio.docx}"}
+        },
+        {"webPart": "9a982114-57ce-467b-9c88-42753409988c", "$comment": "Portfólio: Como funciona"},
+        {"webPart": "4e1d54c3-f117-4119-b95a-a7396efc2996", "$comment": "Portfólio: Critérios de priorização"},
+        {
+          "webPart": "2debf5dc-ac50-4cea-bc54-b1232b7a39ab",
+          "$comment": "Portfólio: Painel de indicadores",
+          "properties": {"buttonUrl": "{site}/Lists/Iniciativas/AllItems.aspx", "panelLinkUrl": "{site}/SitePages/Monitoramento-do-Portfolio.aspx"}
+        },
+        {
+          "webPart": "88b40a5a-8a35-4fb7-9df1-a3de6fe026bb",
+          "$comment": "Portfólio: Ferramentas e ajuda",
+          "properties": {
+            "items": [
+              {"title": "Metodologia de Gestão de Portfólio", "icon": "ReadingMode", "url": "{asset:Metodologia-Gestao-de-Portfolio.docx}"},
+              {"title": "Critérios de Priorização", "icon": "BulletedList", "url": "{site}/SitePages/Priorizacao-do-Portfolio.aspx"},
+              {"title": "Seleção e Balanceamento", "icon": "Flow", "url": "{site}/SitePages/Selecao-e-Balanceamento.aspx"},
+              {"title": "Registro de Decisões", "icon": "People", "url": "{site}/Lists/RegistroDecisoes/AllItems.aspx"},
+              {"title": "Relatório Executivo", "icon": "FabricFolder", "url": "{site}/SitePages/Relatorio-Executivo-do-Portfolio.aspx"},
+              {"title": "Mapa de Capacidade", "icon": "Unknown", "url": "{site}/Lists/MapaCapacidade/AllItems.aspx"}
+            ]
+          }
+        },
+        {"webPart": "d3718a7f-b29f-49d4-8868-2c16c1fc66e9", "$comment": "Portfólio: Rodapé institucional", "properties": {"logoUrl": "{asset:logo-tcemg.png}"}}
+      ]
+    },
+    {
+      "name": "Priorizacao-do-Portfolio",
+      "title": "Priorização do Portfólio",
+      "sections": [{"webPart": "762e114e-fc38-4394-98bd-81148480237a", "$comment": "Portfólio: Priorização"}]
+    },
+    {
+      "name": "Selecao-e-Balanceamento",
+      "title": "Seleção e balanceamento",
+      "sections": [{"webPart": "29bd1b52-e88d-420d-a993-466304b42d40", "$comment": "Portfólio: Seleção e balanceamento"}]
+    },
+    {
+      "name": "Monitoramento-do-Portfolio",
+      "title": "Monitoramento do Portfólio",
+      "sections": [{"webPart": "f5f895c0-5d2c-4b31-85d2-451da5ea6bff", "$comment": "Portfólio: Monitoramento e indicadores"}]
+    },
+    {
+      "name": "Relatorio-Executivo-do-Portfolio",
+      "title": "Relatório Executivo do Portfólio",
+      "sections": [{"webPart": "58edad70-5946-4c39-ac6b-28d81ca716a7", "$comment": "Portfólio: Relatório executivo"}]
+    }
+  ]
 }

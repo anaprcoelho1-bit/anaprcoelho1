@@ -3,19 +3,26 @@
 
 <#
 .SYNOPSIS
-    Implanta o layout "Gestão de Portfólio" (CIPP) em um site de comunicação do SharePoint Online.
+    Implanta a Gestão de Portfólio (CIPP) em um site de comunicação do SharePoint Online: o layout
+    institucional e a automação da Metodologia de Gestão de Portfólio.
 
 .DESCRIPTION
     Etapas executadas (cada uma pode ser ignorada por parâmetro):
       1. Publica o pacote SPFx (cipp-portfolio.sppkg) no catálogo de aplicativos.
       2. Registra o tema da CIPP no tenant e aplica ao site.
       3. Configura título, cabeçalho, megamenu, navegação e rodapé do site.
-      4. Cria a lista "Iniciativas" usada pelo painel de indicadores (e, opcionalmente, dados de exemplo).
-      5. Envia as imagens da pasta assets/ para SiteAssets/gestao-portfolio.
-      6. Cria (ou recria) a página Gestao-de-Portfolio.aspx com as seções do layout e a publica.
+      4. Publica os parâmetros da metodologia (metodologia.json) e cria as listas da metodologia:
+         Iniciativas (inventário e ficha), Registro de Decisões, Mapa de Capacidade e Pontuações do Comitê,
+         com as colunas de notas e as colunas calculadas VP, CR e IPP geradas a partir dos pesos,
+         exibições (fila de entrada, matriz de priorização, portfólio ativo, encerradas) e formulário em seções.
+         Opcionalmente, insere dados de exemplo.
+      5. Envia as imagens e documentos da pasta assets/ para SiteAssets/gestao-portfolio.
+      6. Cria (ou recria) as páginas: Gestão de Portfólio (layout) e as páginas operacionais de
+         Priorização, Seleção e balanceamento, Monitoramento e Relatório executivo.
 
-    Todo o conteúdo vem de gestao-portfolio.config.json. O script pode ser executado várias vezes:
-    a página é limpa e montada novamente, a lista e as colunas existentes são mantidas.
+    O conteúdo vem de gestao-portfolio.config.json e metodologia.json. O script pode ser executado várias vezes:
+    as páginas são limpas e montadas novamente; listas e colunas existentes são mantidas (opções de escolha
+    que faltarem são acrescentadas e as fórmulas de VP, CR e IPP são atualizadas com os pesos vigentes).
 
 .PARAMETER SiteUrl
     URL do site de comunicação. Ex.: https://contoso.sharepoint.com/sites/cipp
@@ -38,6 +45,10 @@
 .EXAMPLE
     # Sem permissão de administrador do tenant: pacote já publicado pelo administrador e tema aplicado manualmente.
     ./Deploy-GestaoPortfolio.ps1 -SiteUrl https://contoso.sharepoint.com/sites/cipp -ClientId <id> -SkipApp -SkipTheme
+
+.EXAMPLE
+    # Revisão anual dos pesos (seção 5.6): atualiza metodologia.json publicado e as fórmulas das colunas calculadas.
+    ./Deploy-GestaoPortfolio.ps1 -SiteUrl https://contoso.sharepoint.com/sites/cipp -ClientId <id> -SkipApp -SkipTheme -SkipNavigation -SkipPage
 #>
 [CmdletBinding()]
 param(
@@ -51,6 +62,8 @@ param(
     [string] $AdminUrl,
 
     [string] $ConfigPath = (Join-Path $PSScriptRoot 'gestao-portfolio.config.json'),
+
+    [string] $MethodologyPath,
 
     [string] $PackagePath = (Join-Path $PSScriptRoot '../spfx/sharepoint/solution/cipp-portfolio.sppkg'),
 
@@ -75,7 +88,17 @@ if (-not $AdminUrl) {
     $AdminUrl = "https://$tenant-admin.sharepoint.com"
 }
 
+Import-Module (Join-Path $PSScriptRoot 'lib/GestaoPortfolio.psm1') -Force
+
 $config = Get-Content -Raw -Encoding utf8 -Path $ConfigPath | ConvertFrom-Json -AsHashtable
+if (-not $MethodologyPath) {
+    $MethodologyPath = Join-Path $PSScriptRoot $config.methodology.file
+}
+$methodology = Remove-JsonComments (Get-Content -Raw -Encoding utf8 -Path $MethodologyPath | ConvertFrom-Json -AsHashtable)
+$problems = Test-MethodologyParameters $methodology
+if ($problems.Count -gt 0) {
+    throw "Parâmetros inválidos em $MethodologyPath`n - $($problems -join "`n - ")"
+}
 $assetsFolder = 'SiteAssets/gestao-portfolio'
 $localAssets = Join-Path $PSScriptRoot 'assets'
 
@@ -106,6 +129,19 @@ if (-not $SkipTheme) {
 # Tokens: {site} e {asset:arquivo}
 # ---------------------------------------------------------------------------
 $uploadedAssets = @{}
+$siteAssetsReady = $false
+
+function Initialize-SiteAssets {
+    # Garante a biblioteca "Ativos do Site" (SiteAssets), criada sob demanda pelo SharePoint.
+    if ($script:siteAssetsReady) {
+        return
+    }
+    $context = $site.Context
+    $library = $context.Web.Lists.EnsureSiteAssetsLibrary()
+    $context.Load($library)
+    $context.ExecuteQuery()
+    $script:siteAssetsReady = $true
+}
 
 function Get-AssetUrl([string] $FileName) {
     if ($uploadedAssets.ContainsKey($FileName)) {
@@ -114,20 +150,15 @@ function Get-AssetUrl([string] $FileName) {
 
     $localFile = Join-Path $localAssets $FileName
     if (-not (Test-Path $localFile)) {
-        Write-Warning "Imagem '$FileName' não encontrada em assets/. A propriedade ficará vazia (a web part usa o visual padrão)."
+        Write-Warning "Arquivo '$FileName' não encontrado em assets/. A propriedade ficará vazia (a web part usa o visual padrão)."
         $uploadedAssets[$FileName] = ''
         return ''
     }
 
-    # Garante a biblioteca "Ativos do Site" (SiteAssets), criada sob demanda pelo SharePoint.
-    $context = $site.Context
-    $library = $context.Web.Lists.EnsureSiteAssetsLibrary()
-    $context.Load($library)
-    $context.ExecuteQuery()
-
+    Initialize-SiteAssets
     $null = Add-PnPFile -Path $localFile -Folder $assetsFolder -Connection $site
     $url = "$siteRelativeUrl/$assetsFolder/$FileName"
-    Write-Host "    imagem enviada: $url"
+    Write-Host "    arquivo enviado: $url"
     $uploadedAssets[$FileName] = $url
     return $url
 }
@@ -242,104 +273,209 @@ if (-not $SkipNavigation) {
 }
 
 # ---------------------------------------------------------------------------
-# 4. Lista de iniciativas
+# 4. Parâmetros da metodologia e listas
 # ---------------------------------------------------------------------------
+function Get-FieldTitle($List, [string] $InternalName) {
+    $field = Get-PnPField -List $List -Identity $InternalName -Connection $site -ErrorAction SilentlyContinue
+    if ($field) { $field.Title } else { $null }
+}
+
+function Set-ListField($List, $Field, [string[]] $Choices) {
+    <# Cria a coluna (ou atualiza opções/fórmula da existente) e retorna o nome de exibição atual. #>
+    $name = $Field.internalName
+    $existing = Get-PnPField -List $List -Identity $name -Connection $site -ErrorAction SilentlyContinue
+    if ($existing) {
+        $schema = Get-PnPProperty -ClientObject $existing -Property SchemaXml -Connection $site
+        $updated = $null
+        if ($Field.type -in 'Choice', 'MultiChoice' -and $Choices.Count -gt 0) {
+            $updated = Merge-ChoicesIntoSchema $schema $Choices
+        }
+        elseif ($Field.type -eq 'Calculated') {
+            $updated = Set-FormulaInSchema $schema $Field.formula
+        }
+        if ($updated) {
+            $null = Set-PnPField -List $List -Identity $name -Values @{ SchemaXml = $updated } -Connection $site
+            Write-Host "    coluna atualizada: $($existing.Title) ($name)"
+        }
+        else {
+            Write-Host "    coluna mantida: $($existing.Title) ($name)"
+        }
+        return $existing.Title
+    }
+
+    $lookupId = $null
+    if ($Field.type -in 'Lookup', 'LookupMulti') {
+        $target = Get-PnPList -Identity $Field.lookupList -Connection $site -ErrorAction SilentlyContinue
+        if (-not $target) {
+            throw "A lista '$($Field.lookupList)' usada pela coluna $name não existe. Verifique a ordem das listas na configuração."
+        }
+        $lookupId = $target.Id.ToString()
+    }
+    $null = Add-PnPFieldFromXml -List $List -FieldXml (New-FieldSchemaXml $Field $Choices $lookupId) -Connection $site
+    $values = @{ Title = $Field.displayName }
+    if ($Field.Contains('description') -and $Field.description) {
+        $values.Description = $Field.description
+    }
+    $null = Set-PnPField -List $List -Identity $name -Values $values -Connection $site
+    Write-Host "    coluna criada: $($Field.displayName) ($name)"
+    return $Field.displayName
+}
+
+function Set-ListView($List, [string] $Title, [string[]] $Fields, [string] $Query, [switch] $Default) {
+    $view = if ($Default) {
+        Get-PnPView -List $List -Connection $site | Where-Object DefaultView | Select-Object -First 1
+    }
+    else {
+        Get-PnPView -List $List -Identity $Title -Connection $site -ErrorAction SilentlyContinue
+    }
+    if ($view) {
+        $values = @{}
+        if ($Query) { $values.ViewQuery = $Query }
+        $null = Set-PnPView -List $List -Identity $view.Id -Fields $Fields -Values $values -Connection $site
+        Write-Host "    exibição atualizada: $($view.Title)"
+    }
+    else {
+        $null = Add-PnPView -List $List -Title $Title -Fields $Fields -Query $Query -RowLimit 100 -Paged -Connection $site
+        Write-Host "    exibição criada: $Title"
+    }
+}
+
+function ConvertTo-Hashtable($Values) {
+    $table = @{}
+    foreach ($key in $Values.Keys) { $table[$key] = $Values[$key] }
+    return $table
+}
+
+$listUrls = @{}
+$scoreNames = [string[]] @($methodology.valueCriteria + $methodology.costRiskCriteria | ForEach-Object { $_.field })
+$indexNames = [string[]] @('ValorPonderado', 'CustoRiscoPonderado', 'IPP')
+
 if (-not $SkipList) {
-    $listConfig = $config.list
-    Write-Step "Garantindo a lista '$($listConfig.title)'"
+    Write-Step "Publicando os parâmetros da metodologia (v$($methodology.version))"
+    Initialize-SiteAssets
+    $null = Add-PnPFile -Path $MethodologyPath -Folder $config.methodology.publishFolder -NewFileName 'metodologia.json' -Connection $site
+    Write-Host "    $siteRelativeUrl/$($config.methodology.publishFolder)/metodologia.json"
 
-    $list = Get-PnPList -Identity $listConfig.url -Connection $site -ErrorAction SilentlyContinue
-    if (-not $list) {
-        $list = New-PnPList -Title $listConfig.title -Url $listConfig.url -Template GenericList -Connection $site
-        Write-Host '    lista criada.'
-    }
-    if ($listConfig.titleFieldDisplayName) {
-        $null = Set-PnPField -List $list -Identity 'Title' -Values @{ Title = $listConfig.titleFieldDisplayName } -Connection $site
-    }
+    foreach ($listConfig in $config.lists) {
+        $listUrls[$listConfig.key] = $listConfig.url
+        Write-Step "Garantindo a lista '$($listConfig.title)'"
 
-    foreach ($field in $listConfig.fields) {
-        $existing = Get-PnPField -List $list -Identity $field.internalName -Connection $site -ErrorAction SilentlyContinue
-        if ($existing) {
-            Write-Host "    coluna já existe, mantida como está: $($field.internalName)"
-            continue
+        $list = Get-PnPList -Identity $listConfig.url -Connection $site -ErrorAction SilentlyContinue
+        if (-not $list) {
+            $list = New-PnPList -Title $listConfig.title -Url $listConfig.url -Template GenericList -Connection $site
+            Write-Host '    lista criada.'
+            if ($listConfig['description']) {
+                try {
+                    Set-PnPList -Identity $list -Description $listConfig.description -Connection $site
+                }
+                catch {
+                    Write-Verbose "Descrição da lista não aplicada: $_"
+                }
+            }
         }
 
-        $fieldArgs = @{
-            List            = $list
-            DisplayName     = $field.displayName
-            InternalName    = $field.internalName
-            Type            = $field.type
-            AddToDefaultView = $true
-            Required        = [bool] $field['required']
-            Connection      = $site
+        $titleValues = @{ Title = $listConfig.titleFieldDisplayName }
+        if ($listConfig.Contains('titleFieldRequired')) { $titleValues.Required = [bool] $listConfig.titleFieldRequired }
+        if ($listConfig['titleFieldDescription']) { $titleValues.Description = $listConfig.titleFieldDescription }
+        $null = Set-PnPField -List $list -Identity 'Title' -Values $titleValues -Connection $site
+
+        $displayNames = @{ Title = $listConfig.titleFieldDisplayName; LinkTitle = $listConfig.titleFieldDisplayName }
+        foreach ($field in $listConfig.fields) {
+            $displayNames[$field.internalName] = Set-ListField $list $field (Resolve-FieldChoices $field $methodology $config)
         }
-        if ($field.type -eq 'Choice') {
-            $fieldArgs.Choices = [string[]] $field.choices
+        if ($listConfig['scoreFields']) {
+            $scoreSpecs = Get-ScoreFieldSpecs $methodology
+            foreach ($field in $scoreSpecs) {
+                $displayNames[$field.internalName] = Set-ListField $list $field @()
+            }
         }
-        $null = Add-PnPField @fieldArgs
-        if ($field['default']) {
-            $null = Set-PnPField -List $list -Identity $field.internalName -Values @{ DefaultValue = $field.default } -Connection $site
+        if ($listConfig['indexFields']) {
+            $indexSpecs = Get-IndexFieldSpecs $methodology $displayNames
+            foreach ($field in $indexSpecs) {
+                $displayNames[$field.internalName] = Set-ListField $list $field @()
+            }
         }
-        Write-Host "    coluna criada: $($field.displayName) ($($field.internalName))"
+
+        foreach ($field in @($listConfig.fields | Where-Object { $_['format'] })) {
+            $formatJson = $config.formats[$field.format] | ConvertTo-Json -Depth 20 -Compress
+            $null = Set-PnPField -List $list -Identity $field.internalName -Values @{ CustomFormatter = $formatJson } -Connection $site
+        }
+
+        foreach ($view in @($listConfig['views'] | Where-Object { $_ })) {
+            $fields = Expand-FieldTokens ([string[]] $view.fields) $scoreNames $indexNames
+            $query = New-ViewQuery ([string[]] $view.statuses) 'Situacao' $view.orderBy ([bool] $view.ascending)
+            Set-ListView $list $view.title $fields $query
+        }
+        if ($listConfig['defaultViewFields']) {
+            $fields = Expand-FieldTokens ([string[]] $listConfig.defaultViewFields) $scoreNames $indexNames
+            $query = if ($listConfig['defaultViewOrderBy']) { New-ViewQuery @() '' $listConfig.defaultViewOrderBy ([bool] $listConfig['defaultViewAscending']) } else { '' }
+            Set-ListView $list '' $fields $query -Default
+        }
+
+        if ($listConfig['formSections']) {
+            $contentType = Get-PnPContentType -List $list -Connection $site |
+                Where-Object { -not $_.Hidden -and -not $_.StringId.StartsWith('0x0120') } | Select-Object -First 1
+            if ($contentType) {
+                $contentType.ClientFormCustomFormatter = New-FormFormatterJson $listConfig.formSections $displayNames $scoreNames $indexNames
+                $contentType.Update($false)
+                Invoke-PnPQuery -Connection $site
+                Write-Host "    formulário organizado em $(@($listConfig.formSections).Count) seções."
+            }
+        }
     }
 
     if ($SeedSampleData) {
-        Write-Step 'Inserindo iniciativas de exemplo'
-        $objectives = @(($listConfig.fields | Where-Object { $_.internalName -eq 'ObjetivoEstrategico' }).choices)
-        # Distribuição decrescente entre os objetivos, como no gráfico do layout.
-        $weights = @(5, 4, 3, 2, 2)
-        $objectivePool = @()
-        for ($i = 0; $i -lt $objectives.Count; $i++) {
-            $objectivePool += @($objectives[$i]) * $weights[[Math]::Min($i, $weights.Count - 1)]
-        }
+        Write-Step 'Inserindo dados de exemplo'
+        $web = Get-PnPWeb -Includes CurrentUser -Connection $site
+        $owner = if ($web.CurrentUser.Email) { $web.CurrentUser.Email } else { $web.CurrentUser.LoginName }
+        $sample = New-SampleData $config $methodology (Get-Date).Date $owner
 
-        $index = 0
-        foreach ($status in $listConfig.sampleData.statuses.Keys) {
-            for ($n = 1; $n -le $listConfig.sampleData.statuses[$status]; $n++) {
-                $index++
-                $values = @{
-                    Title               = "Iniciativa de exemplo $index"
-                    Situacao            = $status
-                    ObjetivoEstrategico = $objectivePool[$index % $objectivePool.Count]
-                    UnidadeDemandante   = 'CIPP'
-                }
-                $null = Add-PnPListItem -List $list -Values $values -Connection $site
+        $ids = @()
+        foreach ($item in $sample.initiatives) {
+            $created = Add-PnPListItem -List $listUrls.initiatives -Values (ConvertTo-Hashtable $item) -Connection $site
+            $ids += $created.Id
+        }
+        foreach ($dependency in $sample.dependencies) {
+            $null = Set-PnPListItem -List $listUrls.initiatives -Identity $ids[$dependency.index] -Values @{ Dependencias = @($dependency.dependsOn | ForEach-Object { $ids[$_] }) } -Connection $site
+        }
+        foreach ($row in $sample.capacity) {
+            $null = Add-PnPListItem -List $listUrls.capacity -Values (ConvertTo-Hashtable $row) -Connection $site
+        }
+        foreach ($decision in $sample.decisions) {
+            $initiative = $sample.initiatives[$decision.index]
+            $null = Add-PnPListItem -List $listUrls.decisions -Connection $site -Values @{
+                Title            = "$($decision.decision) – $($initiative.Title)"
+                Iniciativa       = $ids[$decision.index]
+                PontoDecisao     = $decision.point
+                Decisao          = $decision.decision
+                Justificativa    = $decision.justification
+                Instancia        = $decision.body
+                DataDecisao      = $decision.date
+                SituacaoAnterior = $decision.previous
+                SituacaoNova     = $decision.new
             }
         }
-        Write-Host "    $index itens inseridos."
+        Write-Host "    $($ids.Count) iniciativas, $($sample.capacity.Count) linhas de capacidade e $($sample.decisions.Count) decisões inseridas."
+        Write-Host '    Abra a página de Monitoramento e use "Atualizar lista" para gravar códigos, ranking, semáforo e alertas.'
     }
 }
 
 # ---------------------------------------------------------------------------
-# 5 e 6. Página
+# 5 e 6. Páginas
 # ---------------------------------------------------------------------------
 if (-not $SkipPage) {
-    $pageConfig = $config.page
-    $pageName = $pageConfig.name
-    Write-Step "Montando a página $pageName.aspx"
-
-    $page = $null
-    try {
-        $page = Get-PnPPage -Identity $pageName -Connection $site
-    }
-    catch {
-        $page = $null
-    }
-
-    if ($page) {
-        $page.ClearPage()
-        $null = $page.Save()
-        Write-Host '    página existente limpa.'
-    }
-    else {
-        $null = Add-PnPPage -Name $pageName -LayoutType Home -Connection $site
-        Write-Host '    página criada.'
-    }
+    $pages = @($config.pages)
 
     # Logo após publicar o pacote, as web parts podem levar alguns minutos para aparecer no site.
-    $required = @($pageConfig.sections | ForEach-Object { "$($_.webPart)".ToLowerInvariant() })
+    $firstPage = $pages[0].name
+    $existingFirst = $null
+    try { $existingFirst = Get-PnPPage -Identity $firstPage -Connection $site } catch { $existingFirst = $null }
+    if (-not $existingFirst) {
+        $null = Add-PnPPage -Name $firstPage -LayoutType Home -Connection $site
+    }
+    $required = @($pages | ForEach-Object { $_.sections } | ForEach-Object { "$($_.webPart)".ToLowerInvariant() } | Select-Object -Unique)
     for ($attempt = 1; ; $attempt++) {
-        $available = @(Get-PnPPageComponent -Page $pageName -ListAvailable -Connection $site |
+        $available = @(Get-PnPPageComponent -Page $firstPage -ListAvailable -Connection $site |
             ForEach-Object { "$($_.Id)".Trim('{', '}').ToLowerInvariant() })
         $missing = @($required | Where-Object { $available -notcontains $_ })
         if ($missing.Count -eq 0) {
@@ -352,31 +488,56 @@ if (-not $SkipPage) {
         Start-Sleep -Seconds 15
     }
 
-    $order = 0
-    foreach ($section in $pageConfig.sections) {
-        $order++
-        Add-PnPPageSection -Page $pageName -SectionTemplate OneColumnFullWidth -Order $order -Connection $site
+    foreach ($pageConfig in $pages) {
+        $pageName = $pageConfig.name
+        Write-Step "Montando a página $pageName.aspx"
 
-        $webPartArgs = @{
-            Page       = $pageName
-            Component  = $section.webPart
-            Section    = $order
-            Column     = 1
-            Connection = $site
+        $page = $null
+        try {
+            $page = Get-PnPPage -Identity $pageName -Connection $site
         }
-        if ($section['properties']) {
-            $webPartArgs.WebPartProperties = (Resolve-Tokens $section.properties) | ConvertTo-Json -Depth 20 -Compress
+        catch {
+            $page = $null
         }
-        $null = Add-PnPPageWebPart @webPartArgs
-        Write-Host "    seção $order`: $($section['$comment'])"
-    }
 
-    Set-PnPPage -Identity $pageName -Title $pageConfig.title -CommentsEnabled:$false -Publish -Connection $site
-    if ($pageConfig.setAsHomePage) {
-        Set-PnPHomePage -RootFolderRelativeUrl "SitePages/$pageName.aspx" -Connection $site
-        Write-Host '    definida como página inicial do site.'
+        if ($page) {
+            $page.ClearPage()
+            $null = $page.Save()
+            Write-Host '    página existente limpa.'
+        }
+        else {
+            $null = Add-PnPPage -Name $pageName -LayoutType Home -Connection $site
+            Write-Host '    página criada.'
+        }
+
+        $order = 0
+        foreach ($section in $pageConfig.sections) {
+            $order++
+            Add-PnPPageSection -Page $pageName -SectionTemplate OneColumnFullWidth -Order $order -Connection $site
+
+            $webPartArgs = @{
+                Page       = $pageName
+                Component  = $section.webPart
+                Section    = $order
+                Column     = 1
+                Connection = $site
+            }
+            if ($section['properties']) {
+                $webPartArgs.WebPartProperties = (Resolve-Tokens $section.properties) | ConvertTo-Json -Depth 20 -Compress
+            }
+            $null = Add-PnPPageWebPart @webPartArgs
+            Write-Host "    seção $order`: $($section['$comment'])"
+        }
+
+        Set-PnPPage -Identity $pageName -Title $pageConfig.title -CommentsEnabled:$false -Publish -Connection $site
+        if ($pageConfig['setAsHomePage']) {
+            Set-PnPHomePage -RootFolderRelativeUrl "SitePages/$pageName.aspx" -Connection $site
+            Write-Host '    definida como página inicial do site.'
+        }
     }
 }
 
 Write-Step 'Concluído'
-Write-Host "Página: $SiteUrl/SitePages/$($config.page.name).aspx" -ForegroundColor Green
+foreach ($pageConfig in $config.pages) {
+    Write-Host "Página: $SiteUrl/SitePages/$($pageConfig.name).aspx" -ForegroundColor Green
+}

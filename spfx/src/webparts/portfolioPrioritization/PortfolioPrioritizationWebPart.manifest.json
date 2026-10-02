@@ -1,0 +1,30 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "762e114e-fc38-4394-98bd-81148480237a",
+  "alias": "PortfolioPrioritizationWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart"
+  ],
+  "supportsThemeVariants": false,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "0b5d4a3e-6b2f-4f7c-9a59-cc1f6f3d2a11",
+      "group": {
+        "default": "CIPP – Gestão de Portfólio"
+      },
+      "title": {
+        "default": "Portfólio: Priorização"
+      },
+      "description": {
+        "default": "Fila de entrada, critérios de entrada, pontos de controle e Matriz de Avaliação e Priorização (VP, CR e IPP), com registro de decisões."
+      },
+      "officeFabricIconFontName": "BulletedList2",
+      "properties": {}
+    }
+  ]
+}
